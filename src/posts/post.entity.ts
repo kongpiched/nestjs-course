@@ -1,12 +1,19 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { postType } from './enums/post-type.enum';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+
+import { MetaOption } from 'src/meta-options/meta-option.entity';
 import { postStatus } from './enums/post-status.enum';
-import { CreatePostMetaOptionsDto } from './dtos/create-post-meta-options.dto';
+import { postType } from './enums/post-type.enum';
 
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({
     type: 'varchar',
@@ -59,12 +66,17 @@ export class Post {
   featuredImageUrl?: string;
 
   @Column({
-    type: 'timestamp', //datetime in mysql
+    type: 'timestamp', // 'datetime' in mysql
     nullable: true,
   })
-  publishOn: Date;
+  publishOn?: Date;
 
+  @OneToOne(() => MetaOption, (metaOptions) => metaOptions.post, {
+    cascade: true,
+    eager: true,
+  })
+  metaOptions?: MetaOption;
+
+  // Work on these in lecture on relationships
   tags?: string[];
-
-  metaOptions?: CreatePostMetaOptionsDto[];
 }
